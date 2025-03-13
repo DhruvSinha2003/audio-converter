@@ -11,25 +11,20 @@ const MediaPlayer = ({ file, files, onSelectFile }) => {
   const totalFiles = files?.length ?? 0;
   const currentPosition = currentIndex !== -1 ? currentIndex + 1 : 0;
 
-  // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Only handle if we have a valid file
       if (!file || !files || files.length <= 1) return;
 
-      // Ctrl + Left Arrow: Previous
       if (e.ctrlKey && e.key === "ArrowLeft") {
         e.preventDefault();
         handleNavigation("prev");
       }
 
-      // Ctrl + Right Arrow: Next
       if (e.ctrlKey && e.key === "ArrowRight") {
         e.preventDefault();
         handleNavigation("next");
       }
 
-      // Ctrl + Space: Play/Pause
       if (e.ctrlKey && e.key === " ") {
         e.preventDefault();
         handlePlayPause();
@@ -186,34 +181,34 @@ const MediaPlayer = ({ file, files, onSelectFile }) => {
               <div>
                 <span
                   className="font-mono bg-opacity-25 px-1 rounded text-xs"
-                  style={{ backgroundColor: colors.primary }}
+                  style={{ backgroundColor: colors.primaryVariant }}
                 >
-                  Ctrl+←
+                  Ctrl + ←
                 </span>{" "}
                 Previous
               </div>
               <div>
                 <span
                   className="font-mono bg-opacity-25 px-1 rounded text-xs"
-                  style={{ backgroundColor: colors.primary }}
+                  style={{ backgroundColor: colors.primaryVariant }}
                 >
-                  Ctrl+→
+                  Ctrl + →
                 </span>{" "}
                 Next
               </div>
               <div>
                 <span
                   className="font-mono bg-opacity-25 px-1 rounded text-xs"
-                  style={{ backgroundColor: colors.primary }}
+                  style={{ backgroundColor: colors.primaryVariant }}
                 >
-                  Ctrl+Space
+                  Ctrl + Space
                 </span>{" "}
                 Play/Pause
               </div>
               <div>
                 <span
                   className="font-mono bg-opacity-25 px-1 rounded text-xs"
-                  style={{ backgroundColor: colors.primary }}
+                  style={{ backgroundColor: colors.primaryVariant }}
                 >
                   Click File
                 </span>{" "}
