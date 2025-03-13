@@ -84,9 +84,7 @@ function App() {
           >
             Audio File Converter
           </h1>
-          <p className="mt-2 opacity-80">
-            Convert WAPTT and OPUS to MP3 files with ease
-          </p>
+          <p className="mt-2 opacity-80">Convert WAPTT and OPUS to MP3</p>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

@@ -52,7 +52,6 @@ const MediaPlayer = ({ file, files, onSelectFile }) => {
     }
   }, [file]);
 
-  // Update time and duration info
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
@@ -60,12 +59,10 @@ const MediaPlayer = ({ file, files, onSelectFile }) => {
     }
   };
 
-  // Handle play/pause state changes
   const handlePlayStateChange = () => {
     setIsPlaying(!audioRef.current.paused);
   };
 
-  // Toggle play/pause
   const handlePlayPause = () => {
     if (!audioRef.current) return;
 
@@ -78,7 +75,6 @@ const MediaPlayer = ({ file, files, onSelectFile }) => {
     }
   };
 
-  // Navigate to next/previous file
   const handleNavigation = (direction) => {
     if (!files || !file || files.length <= 1) return;
 
@@ -136,7 +132,7 @@ const MediaPlayer = ({ file, files, onSelectFile }) => {
       <audio
         ref={audioRef}
         controls
-        className="w-full rounded"
+        className="w-full"
         src={file.url}
         onPlay={handlePlayStateChange}
         onPause={handlePlayStateChange}
@@ -153,7 +149,6 @@ const MediaPlayer = ({ file, files, onSelectFile }) => {
               className="py-2 px-4 rounded-lg font-medium transition-all flex items-center"
               style={{
                 backgroundColor: colors.primaryVariant,
-                color: colors.onPrimary,
               }}
               onClick={() => handleNavigation("prev")}
             >
@@ -164,7 +159,6 @@ const MediaPlayer = ({ file, files, onSelectFile }) => {
               className="py-2 px-4 rounded-lg font-medium transition-all flex items-center"
               style={{
                 backgroundColor: colors.primaryVariant,
-                color: colors.onPrimary,
               }}
               onClick={() => handleNavigation("next")}
             >
