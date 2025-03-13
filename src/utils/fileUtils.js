@@ -1,9 +1,8 @@
-// src/utils/fileUtils.js
+import urlManager from "./urlManager";
+
 export const processFiles = (files) => {
   return files.map((file) => {
     const fileName = file.name;
-
-    // Find the last dot position to correctly identify the extension
     const lastDotIndex = fileName.lastIndexOf(".");
     const fileExtension =
       lastDotIndex !== -1
@@ -19,16 +18,13 @@ export const processFiles = (files) => {
         convertedName: fileName,
         extension: fileExtension,
         status: "unchanged",
-        url: URL.createObjectURL(file),
+        url: urlManager.getUrl(file),
       };
     }
 
     // For opus and waptt, just rename to mp3
     if (fileExtension === "opus" || fileExtension === "waptt") {
-      // Replace only the extension part, preserving the full filename with any dots
       const newName = fileName.substring(0, lastDotIndex) + ".mp3";
-
-      // Create a new File object with the same content but different name
       const convertedFile = new File([file], newName, { type: "audio/mp3" });
 
       return {
@@ -38,7 +34,7 @@ export const processFiles = (files) => {
         convertedName: newName,
         extension: fileExtension,
         status: "converted",
-        url: URL.createObjectURL(convertedFile),
+        url: urlManager.getUrl(convertedFile),
       };
     }
 
@@ -50,7 +46,7 @@ export const processFiles = (files) => {
       convertedName: null,
       extension: fileExtension || "unknown",
       status: "unsupported",
-      url: URL.createObjectURL(file),
+      url: urlManager.getUrl(file),
     };
   });
 };

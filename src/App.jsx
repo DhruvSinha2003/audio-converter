@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ConversionSummary from "./components/ConversionSummary";
 import Dropzone from "./components/Dropzone";
 import FileList from "./components/FileList";
 import MediaPlayer from "./components/MediaPlayer";
+import urlManager from "./utils/urlManager";
+
 import { colors } from "./styles/colors";
 import { getFileCounts, processFiles } from "./utils/fileUtils";
 import { createAndDownloadZip } from "./utils/zipUtils";
@@ -17,30 +19,29 @@ function App() {
   const [previewFile, setPreviewFile] = useState(null);
 
   const handleDrop = (acceptedFiles) => {
+    console.log("Dropped files:", acceptedFiles);
     setFiles(acceptedFiles);
     setIsConverted(false);
     setProcessedFiles([]);
     setSelectedFile(null);
     setPreviewFile(null);
-
-    // Calculate file counts
     const processed = processFiles(acceptedFiles);
     setFileCounts(getFileCounts(processed));
   };
 
   const handleConvert = () => {
     if (files.length === 0) return;
-
+    console.log("Starting conversion for files:", files);
     setIsProcessing(true);
 
-    // Simulate processing time for better UX
     setTimeout(() => {
       const processed = processFiles(files);
       setProcessedFiles(processed);
       setIsConverted(true);
       setIsProcessing(false);
 
-      // Select the first file by default
+      console.log("Processed files:", processed);
+
       if (processed.length > 0) {
         setSelectedFile(processed[0]);
       }
@@ -48,19 +49,27 @@ function App() {
   };
 
   const handleSelectFile = (file) => {
+    console.log("Selected file:", file);
     setSelectedFile(file);
   };
 
-  // New handler for previewing uploaded files before conversion
   const handlePreviewFile = (file) => {
+    console.log("Preview file:", file);
     setPreviewFile(file);
   };
 
   const handleDownloadAll = () => {
     if (processedFiles.length > 0) {
+      console.log("Downloading all files:", processedFiles);
       createAndDownloadZip(processedFiles);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      urlManager.revokeAll();
+    };
+  }, []);
 
   return (
     <div
@@ -81,11 +90,9 @@ function App() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Left Column */}
           <div>
             <h2 className="text-xl font-semibold mb-4">Files</h2>
             {fileCounts && <ConversionSummary counts={fileCounts} />}
-
             {isConverted ? (
               <>
                 <div className="mb-4">
@@ -96,7 +103,6 @@ function App() {
                     selectedFile={selectedFile}
                   />
                 </div>
-
                 <button
                   className="w-full py-3 px-4 rounded-lg font-medium transition-all mt-4"
                   style={{
@@ -136,8 +142,6 @@ function App() {
               </div>
             )}
           </div>
-
-          {/* Right Column */}
           <div>
             {isConverted ? (
               <div>
@@ -152,7 +156,6 @@ function App() {
               <>
                 <h2 className="text-xl font-semibold mb-4">Upload Files</h2>
                 <Dropzone onDrop={handleDrop} isProcessing={isProcessing} />
-
                 {files.length > 0 && (
                   <div className="mt-4">
                     <h3 className="text-lg font-medium mb-2">Uploaded Files</h3>

@@ -1,52 +1,73 @@
-// src/components/FileList.jsx
 import React, { useEffect, useState } from "react";
 import { colors } from "../styles/colors";
 
 const FileList = ({ files, onSelectFile, selectedFile }) => {
   const [fileDurations, setFileDurations] = useState({});
+  const BATCH_SIZE = 10;
 
-  // Load audio durations for all files
+  // Load audio durations for files in batches
   useEffect(() => {
-    const loadDurations = async () => {
-      const durations = {};
+    if (!files || files.length === 0) return;
 
-      for (const file of files) {
+    let isMounted = true;
+    const durations = { ...fileDurations }; // Start with existing durations
+
+    const processBatch = async (startIndex) => {
+      if (!isMounted) return;
+
+      const endIndex = Math.min(startIndex + BATCH_SIZE, files.length);
+      const batch = files.slice(startIndex, endIndex);
+
+      // Process this batch
+      const batchPromises = batch.map(async (file) => {
+        // Skip if we already have the duration
+        if (durations[file.url] !== undefined) return;
+
         try {
-          // Create audio element to get duration
           const audio = new Audio(file.url);
 
-          // Wait for metadata to load
-          const getDuration = new Promise((resolve) => {
-            audio.addEventListener("loadedmetadata", () => {
-              resolve(audio.duration);
-            });
+          // Get duration or timeout after 3 seconds
+          const duration = await Promise.race([
+            new Promise((resolve) => {
+              audio.addEventListener("loadedmetadata", () => {
+                resolve(audio.duration);
+              });
 
-            // Handle errors or unsupported files
-            audio.addEventListener("error", () => {
-              resolve(null);
-            });
-          });
+              audio.addEventListener("error", () => {
+                resolve(null);
+              });
+            }),
+            new Promise((resolve) => setTimeout(() => resolve(null), 3000)),
+          ]);
 
-          const duration = await getDuration;
           durations[file.url] = duration;
+
+          // Release the audio element
+          audio.src = "";
+          audio.load();
         } catch (error) {
           console.error("Error loading audio duration:", error);
           durations[file.url] = null;
         }
-      }
+      });
 
-      setFileDurations(durations);
+      await Promise.all(batchPromises);
+
+      if (isMounted) {
+        setFileDurations({ ...durations });
+
+        // Process next batch if there are more files
+        if (endIndex < files.length) {
+          setTimeout(() => processBatch(endIndex), 100);
+        }
+      }
     };
 
-    if (files && files.length > 0) {
-      loadDurations();
-    }
+    // Start processing the first batch
+    processBatch(0);
 
-    // Cleanup function to prevent memory leaks
     return () => {
-      files.forEach((file) => {
-        URL.revokeObjectURL(file.url);
-      });
+      isMounted = false;
     };
   }, [files]);
 
