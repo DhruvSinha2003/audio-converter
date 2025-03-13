@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState } from "react";
 import ConversionSummary from "./components/ConversionSummary";
 import Dropzone from "./components/Dropzone";
@@ -143,7 +142,11 @@ function App() {
             {isConverted ? (
               <div>
                 <h2 className="text-xl font-semibold mb-4">Media Player</h2>
-                <MediaPlayer file={selectedFile} />
+                <MediaPlayer
+                  file={selectedFile}
+                  files={processedFiles}
+                  onSelectFile={handleSelectFile}
+                />
               </div>
             ) : (
               <>
@@ -160,7 +163,11 @@ function App() {
                     />
                     {previewFile && (
                       <div className="mt-4">
-                        <MediaPlayer file={previewFile} />
+                        <MediaPlayer
+                          file={previewFile}
+                          files={processFiles(files)}
+                          onSelectFile={handlePreviewFile}
+                        />
                       </div>
                     )}
                   </div>
